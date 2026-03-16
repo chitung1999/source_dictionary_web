@@ -1,34 +1,33 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:learning_english_web/data/data_app.dart';
-import 'package:learning_english_web/presentation/page/login_page/login_page.dart';
-import 'package:learning_english_web/server/appwrite_helper.dart';
-import 'package:provider/provider.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:learning_english_web/presentation/page/main_page.dart';
 
 void main() async {
-  await server.initialize();
-  runApp(
-    ChangeNotifierProvider(
-      create: (_) => DataApp(),
-      child: const TheApp(),
-    ),
-  );
+  runApp(MyApp());
 }
 
-class TheApp extends StatelessWidget {
-  const TheApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Learning English',
-      scrollBehavior: const MaterialScrollBehavior().copyWith(
-        dragDevices: {
-          PointerDeviceKind.touch,
-          PointerDeviceKind.mouse,
-        },
+    return ProviderScope(
+      child: MaterialApp(
+        title: 'Learning English',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        ),
+        scrollBehavior: const MaterialScrollBehavior().copyWith(
+          dragDevices: {
+            PointerDeviceKind.touch,
+            PointerDeviceKind.mouse,
+            PointerDeviceKind.trackpad,
+            PointerDeviceKind.stylus,
+          },
+        ),
+        home: const MainPage(),
+        debugShowCheckedModeBanner: false,
       ),
-      home: LoginPage(),
-      debugShowCheckedModeBanner: false,
     );
   }
 }

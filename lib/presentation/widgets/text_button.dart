@@ -2,73 +2,64 @@ import 'package:flutter/material.dart';
 
 enum TextButtonType { normal, outline, primary }
 
-class TextButtonCustom extends StatelessWidget {
+class TextButtonApp extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
   final bool isEnabled;
-  final double width;
-  final double height;
-  final double radius;
-  final double? textSize;
-  final FontWeight? fontWeight;
-
+  final double? width;
+  final double? height;
+  final double? radius;
   final TextButtonType type;
+  final TextStyle? textStyle;
   final Color? bgColor;
-  final Color? textColor;
   final Color? borderColor;
-  final double borderWidth;
+  final double? borderWidth;
 
-  const TextButtonCustom._({
+  const TextButtonApp._({
     required this.text,
     required this.onPressed,
     required this.type,
     this.isEnabled = true,
-    this.width = 0,
-    this.height = 0,
-    this.radius = 0,
-    this.textSize,
-    this.fontWeight,
+    this.width,
+    this.height,
+    this.radius,
+    this.textStyle,
     this.bgColor,
-    this.textColor,
     this.borderColor,
-    this.borderWidth = 1,
+    this.borderWidth,
   });
 
-  factory TextButtonCustom.normal({
+  factory TextButtonApp.normal({
     required String text,
     required VoidCallback onPressed,
     bool isEnabled = true,
-    double? textSize,
-    FontWeight? fontWeight,
-    Color? textColor,
+    double? width,
+    double? height,
+    TextButtonType? type,
+    TextStyle? textStyle,
   }) {
-    return TextButtonCustom._(
+    return TextButtonApp._(
       text: text,
       onPressed: onPressed,
-      type: TextButtonType.normal,
       isEnabled: isEnabled,
-      width: 0,
-      height: 0,
-      radius: 0,
-      textSize: textSize,
-      fontWeight: fontWeight,
-      textColor: textColor,
+      width: width,
+      height: height,
+      textStyle: textStyle,
+      type: TextButtonType.normal,
     );
   }
 
-  factory TextButtonCustom.primary({
+  factory TextButtonApp.primary({
     required String text,
     required VoidCallback onPressed,
     bool isEnabled = true,
-    double width = 0,
-    double height = 0,
-    double radius = 0,
-    double? textSize,
-    FontWeight? fontWeight,
+    double? width,
+    double? height,
+    double? radius,
+    TextStyle? textStyle,
     Color? bgColor,
-    Color? textColor,
   }) {
-    return TextButtonCustom._(
+    return TextButtonApp._(
       text: text,
       onPressed: onPressed,
       type: TextButtonType.primary,
@@ -76,27 +67,23 @@ class TextButtonCustom extends StatelessWidget {
       width: width,
       height: height,
       radius: radius,
-      textSize: textSize,
-      fontWeight: fontWeight,
       bgColor: bgColor,
-      textColor: textColor,
+      textStyle: textStyle,
     );
   }
 
-  factory TextButtonCustom.outline({
+  factory TextButtonApp.outline({
     required String text,
     required VoidCallback onPressed,
     bool isEnabled = true,
-    double width = 0,
-    double height = 0,
-    double radius = 0,
-    double? textSize,
-    FontWeight? fontWeight,
+    double? width,
+    double? height,
+    double? radius,
+    TextStyle? textStyle,
     Color? borderColor,
-    double borderWidth = 1,
-    Color? textColor,
+    double? borderWidth,
   }) {
-    return TextButtonCustom._(
+    return TextButtonApp._(
       text: text,
       onPressed: onPressed,
       type: TextButtonType.outline,
@@ -104,69 +91,47 @@ class TextButtonCustom extends StatelessWidget {
       width: width,
       height: height,
       radius: radius,
-      textSize: textSize,
-      fontWeight: fontWeight,
+      textStyle: textStyle,
       borderColor: borderColor,
       borderWidth: borderWidth,
-      textColor: textColor,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    Color resolvedBgColor;
-    Color resolvedTextColor;
-    Color resolvedBorderColor;
+    if (type == TextButtonType.normal) {
+      Text content = Text(text, style: textStyle);
 
-    switch (type) {
-      case TextButtonType.normal:
-        resolvedBgColor = Colors.transparent;
-        resolvedTextColor = textColor ?? Colors.black;
-        resolvedBorderColor = Colors.transparent;
-        break;
-      case TextButtonType.primary:
-        resolvedBgColor = isEnabled
-            ? (bgColor ?? Colors.grey.shade300)
-            : Colors.grey.shade300;
-        resolvedTextColor = isEnabled
-            ? (textColor ?? Colors.black)
-            : Colors.white;
-        resolvedBorderColor = Colors.transparent;
-        break;
-      case TextButtonType.outline:
-        resolvedBgColor = Colors.transparent;
-        resolvedTextColor = isEnabled
-            ? (textColor ?? Colors.black)
-            : Colors.white;
-        resolvedBorderColor = isEnabled
-            ? (borderColor ?? Colors.black)
-            : Colors.white;
-        break;
-    }
-
-    final ButtonStyle style = TextButton.styleFrom(
-      backgroundColor: resolvedBgColor,
-      minimumSize: Size(width, height),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(radius),
-        side: type == TextButtonType.outline
-            ? BorderSide(color: resolvedBorderColor, width: borderWidth)
-            : BorderSide.none,
-      ),
-      overlayColor: isEnabled ? null : Colors.transparent,
-    );
-
-    return TextButton(
-      onPressed: isEnabled ? onPressed : null,
-      style: style,
-      child: Text(
-        text,
-        style: TextStyle(
-          color: resolvedTextColor,
-          fontSize: textSize,
-          fontWeight: fontWeight,
+      return GestureDetector(
+        onTap: isEnabled ? onPressed : null,
+        child: width == null ? content :
+        Container(
+          width: width,
+          height: height,
+          color: Colors.transparent,
+          child: Center(child: content),
         ),
-      ),
-    );
+      );
+    } else {
+      final ButtonStyle style = TextButton.styleFrom(
+        backgroundColor: bgColor ?? Colors.transparent,
+        minimumSize: Size(width ?? 0, height ?? 0),
+        padding: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(radius ?? 0),
+          side: type == TextButtonType.outline
+              ? BorderSide(color: borderColor ?? Colors.black, width: borderWidth ?? 1)
+              : BorderSide.none,
+        ),
+        overlayColor: isEnabled ? null : Colors.transparent,
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      );
+
+      return TextButton(
+        onPressed: isEnabled ? onPressed : null,
+        style: style,
+        child: Text(text, style: textStyle),
+      );
+    }
   }
 }
